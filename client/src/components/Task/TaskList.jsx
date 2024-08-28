@@ -12,6 +12,8 @@ const TaskList = () => {
   const [currentTask, setCurrentTask] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
   const [isView, setIsView] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('createdAt'); // default sort by creation date
 
   useEffect(() => {
     dispatch(getTasks());
@@ -58,10 +60,25 @@ const TaskList = () => {
     setShowPopup(false);
   };
 
+  const filteredTasks = tasks.filter(task =>
+    task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    task.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedTasks = filteredTasks.sort((a, b) => {
+    if (sortOrder === 'title') {
+      return a.title.localeCompare(b.title);
+    } else if (sortOrder === 'status') {
+      return a.status.localeCompare(b.status);
+    } else {
+      return new Date(b.createdAt) - new Date(a.createdAt); // sort by creation date
+    }
+  });
+
   const tasksByStatus = {
-    TODO: tasks.filter(task => task.status === 'TODO'),
-    'IN PROGRESS': tasks.filter(task => task.status === 'IN PROGRESS'),
-    DONE: tasks.filter(task => task.status === 'DONE'),
+    TODO: sortedTasks.filter(task => task.status === 'TODO'),
+    'IN PROGRESS': sortedTasks.filter(task => task.status === 'IN PROGRESS'),
+    DONE: sortedTasks.filter(task => task.status === 'DONE'),
   };
 
   return (
@@ -74,8 +91,23 @@ const TaskList = () => {
           Add Task
         </button>
       </div>
-      <div>
-        {/* search and sort here  */}
+      <div className="flex items-center justify-between mb-4">
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          className="border p-2 rounded w-1/2"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <select
+          className="border p-2 rounded"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+        >
+          <option value="createdAt">Sort by Date</option>
+          <option value="title">Sort by Title</option>
+          <option value="status">Sort by Status</option>
+        </select>
       </div>
       <div className="flex justify-between space-x-4">
         {['TODO', 'IN PROGRESS', 'DONE'].map(status => (
