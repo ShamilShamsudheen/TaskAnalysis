@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getTasks, deleteTask, addTask, editTask } from '../../actions/taskActions';
 import TaskCard from './TaskCard';
 import TaskPopup from '../Task/TaskPopUp';
-import { useDrop } from 'react-dnd';
-import { ItemTypes } from '../../constant';
+import Column from './Column'; // Import the Column component
 
 const TaskList = () => {
   const dispatch = useDispatch();
@@ -90,28 +89,6 @@ const TaskList = () => {
     }
   };
 
-  const Column = ({ status, children }) => {
-    const [{ isOver }, drop] = useDrop({
-      accept: ItemTypes.TASK,
-      drop: (item) => moveTask(item.id, status),
-      collect: (monitor) => ({
-        isOver: !!monitor.isOver(),
-      }),
-    });
-
-    return (
-      <div
-        ref={drop}
-        className={`w-1/3 border-2 rounded-md p-2 ${isOver ? 'bg-gray-200' : ''}`}
-      >
-        <h3 className="text-md p-1 text-white bg-blue-500 font-bold mb-2">{status}</h3>
-        <div className="space-y-4">
-          {children}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="p-4">
       <div className="items-center mb-4">
@@ -142,7 +119,7 @@ const TaskList = () => {
       </div>
       <div className="flex justify-between space-x-4">
         {['TODO', 'IN PROGRESS', 'DONE'].map(status => (
-          <Column key={status} status={status}>
+          <Column key={status} status={status} moveTask={moveTask}>
             {tasksByStatus[status].map(task => (
               <TaskCard
                 key={task._id}
