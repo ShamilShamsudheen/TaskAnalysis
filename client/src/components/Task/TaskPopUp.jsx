@@ -47,7 +47,7 @@ const TaskPopup = ({ show, onClose, initialData, isEdit, isView }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center">
-      {isEdit && (
+      {!isView ? (
         <div className="bg-white p-6 rounded-lg w-1/3">
           <h2 className="text-2xl font-bold mb-4">{isEdit ? 'Edit Task' : 'Add New Task'}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -93,8 +93,7 @@ const TaskPopup = ({ show, onClose, initialData, isEdit, isView }) => {
             </div>
           </form>
         </div>
-      )}
-      {isView && (
+      ): (
         <div className="bg-white p-6 rounded-lg w-1/3">
           <h1 className="text-2xl font-bold mb-2">{formData.title}</h1>
           <p className="mb-4">{formData.description}</p>
